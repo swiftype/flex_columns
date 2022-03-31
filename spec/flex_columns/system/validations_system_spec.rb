@@ -34,7 +34,7 @@ describe "FlexColumns validations" do
 
     e.record.should be(user)
     e.record.errors.keys.should == [ :'user_attributes.wants_email' ]
-    messages = e.record.errors.get(:'user_attributes.wants_email')
+    messages = e.record.errors[:'user_attributes.wants_email']
     messages.length.should == 1
 
     message = messages[0]
@@ -57,7 +57,7 @@ describe "FlexColumns validations" do
 
     e.record.should be(user)
     e.record.errors.keys.should == [ :wants_email ]
-    messages = e.record.errors.get(:wants_email)
+    messages = e.record.errors[:wants_email]
     messages.length.should == 1
 
     message = messages[0]
@@ -83,7 +83,7 @@ describe "FlexColumns validations" do
 
     e.record.should be(user)
     e.record.errors.keys.should == [ :wants_email ]
-    messages = e.record.errors.get(:wants_email)
+    messages = e.record.errors[:wants_email]
     messages.length.should == 1
 
     message = messages[0]
@@ -97,7 +97,7 @@ describe "FlexColumns validations" do
 
     e.record.should be(user)
     e.record.errors.keys.should == [ :'user_attributes.wants_email' ]
-    messages = e.record.errors.get(:'user_attributes.wants_email')
+    messages = e.record.errors[:'user_attributes.wants_email']
     messages.length.should == 1
 
     message = messages[0]
