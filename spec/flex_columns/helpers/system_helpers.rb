@@ -4,8 +4,10 @@ require 'active_record/migration'
 module FlexColumns
   module Helpers
     module SystemHelpers
+      MIGRATION_CLASS_BREAKING_VERSION = 5
+
       def migrate(&block)
-        migration_class = Class.new(::ActiveRecord::Migration)
+        migration_class = Class.new(migration_class_parent)
         metaclass = migration_class.class_eval { class << self; self; end }
         metaclass.instance_eval { define_method(:up, &block) }
 
@@ -49,6 +51,12 @@ module FlexColumns
         migrate do
           drop_table :flexcols_spec_users rescue nil
         end
+      end
+
+      def migration_class_parent
+        return ::ActiveRecord::Migration if ::ActiveRecord::VERSION::STRING.to_f < MIGRATION_CLASS_BREAKING_VERSION
+
+        ::ActiveRecord::Migration[::ActiveRecord::VERSION::STRING.to_f]
       end
     end
   end

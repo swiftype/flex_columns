@@ -20,15 +20,15 @@ Gem::Specification.new do |s|
 
   s.add_dependency 'json'
 
-  s.add_development_dependency "bundler", "~> 1.3"
-  s.add_development_dependency "rake"
+  s.add_development_dependency "bundler", "~> 1.16.2"
+  s.add_development_dependency "rake", '< 11.0'
   s.add_development_dependency "rspec", "~> 2.14"
 
   ar_version = ENV['FLEX_COLUMNS_AR_TEST_VERSION']
   ar_version = ar_version.strip if ar_version
 
   version_spec = case ar_version
-  when nil then [ ">= 3.0", "<= 4.99.99" ]
+  when nil then [ ">= 3.0", "<= 5.99.99" ]
   when 'master' then nil
   else [ "=#{ar_version}" ]
   end
@@ -37,7 +37,7 @@ Gem::Specification.new do |s|
     s.add_dependency("activerecord", *version_spec)
   end
 
-  s.add_dependency "activesupport", ">= 3.0", "<= 4.99.99"
+  s.add_dependency "activesupport", ">= 3.0", "<= 5.99.99"
 
   # i18n released an 0.7.0 that's incompatible with Ruby 1.8.
   if RUBY_VERSION =~ /^1\.8\./

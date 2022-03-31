@@ -19,7 +19,8 @@ module FlexColumns
       before_save :_flex_columns_before_save!
 
       class << self
-        alias_method_chain :reset_column_information, :flex_columns
+        alias_method :reset_column_information_without_flex_columns, :reset_column_information
+        alias_method :reset_column_information, :reset_column_information_with_flex_columns
       end
     end
 
