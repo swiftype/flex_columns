@@ -1,5 +1,9 @@
 # `flex_columns` Changelog
 
+## 1.0.10, 2022-04-11
+
+* Bump gem version to resolve conflicts with original gem version
+
 ## 1.0.9, 2022-03-31
 
 * Bumped version of bundler and Activerecord to make the gem compatible with Rails 5
