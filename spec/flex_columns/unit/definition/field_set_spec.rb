@@ -10,21 +10,21 @@ describe FlexColumns::Definition::FieldSet do
 
   before :each do
     @model_class = double("model_class")
-    allow(@model_class).to receive(:name).with().and_return("modname")
+    allow(@model_class).to receive(:name).with(no_args).and_return("modname")
 
     @flex_column_class = double("flex_column_class")
-    allow(@flex_column_class).to receive(:model_class).with().and_return(@model_class)
-    allow(@flex_column_class).to receive(:column_name).with().and_return("colname")
+    allow(@flex_column_class).to receive(:model_class).with(no_args).and_return(@model_class)
+    allow(@flex_column_class).to receive(:column_name).with(no_args).and_return("colname")
 
     @instance = klass.new(@flex_column_class)
   end
 
   it "should allow defining fields and returning them" do
     @field_foo = double("field_foo")
-    allow(@field_foo).to receive(:json_storage_name).with().and_return(:foo_storage)
+    allow(@field_foo).to receive(:json_storage_name).with(no_args).and_return(:foo_storage)
 
     @field_bar = double("field_bar")
-    allow(@field_bar).to receive(:json_storage_name).with().and_return(:storage_bar)
+    allow(@field_bar).to receive(:json_storage_name).with(no_args).and_return(:storage_bar)
 
     expect(FlexColumns::Definition::FieldDefinition).to receive(:new).once.with(@flex_column_class, :foo, [ ], { }).and_return(@field_foo)
     @instance.field(' fOo ')
@@ -51,12 +51,12 @@ describe FlexColumns::Definition::FieldSet do
 
   it "should raise if there's a duplicate JSON storage name" do
     @field_foo = double("field_foo")
-    allow(@field_foo).to receive(:json_storage_name).with().and_return(:foo_storage)
-    allow(@field_foo).to receive(:field_name).with().and_return(:foo)
+    allow(@field_foo).to receive(:json_storage_name).with(no_args).and_return(:foo_storage)
+    allow(@field_foo).to receive(:field_name).with(no_args).and_return(:foo)
 
     @field_bar = double("field_bar")
-    allow(@field_bar).to receive(:json_storage_name).with().and_return(:foo_storage)
-    allow(@field_bar).to receive(:field_name).with().and_return(:bar)
+    allow(@field_bar).to receive(:json_storage_name).with(no_args).and_return(:foo_storage)
+    allow(@field_bar).to receive(:field_name).with(no_args).and_return(:bar)
 
     expect(FlexColumns::Definition::FieldDefinition).to receive(:new).once.with(@flex_column_class, :foo, [ ], { }).and_return(@field_foo)
     @instance.field(' fOo ')
@@ -76,12 +76,12 @@ describe FlexColumns::Definition::FieldSet do
 
   it "should allow redefining the same field, and the new field should win" do
     @field_foo_1 = double("field_foo_1")
-    allow(@field_foo_1).to receive(:json_storage_name).with().and_return(:foo_storage)
-    allow(@field_foo_1).to receive(:field_name).with().and_return(:foo)
+    allow(@field_foo_1).to receive(:json_storage_name).with(no_args).and_return(:foo_storage)
+    allow(@field_foo_1).to receive(:field_name).with(no_args).and_return(:foo)
 
     @field_foo_2 = double("field_foo_2")
-    allow(@field_foo_2).to receive(:json_storage_name).with().and_return(:foo_storage)
-    allow(@field_foo_2).to receive(:field_name).with().and_return(:foo)
+    allow(@field_foo_2).to receive(:json_storage_name).with(no_args).and_return(:foo_storage)
+    allow(@field_foo_2).to receive(:field_name).with(no_args).and_return(:foo)
 
     expect(FlexColumns::Definition::FieldDefinition).to receive(:new).once.with(@flex_column_class, :foo, [ ], { }).and_return(@field_foo_1)
     @instance.field(' fOo ')
@@ -95,10 +95,10 @@ describe FlexColumns::Definition::FieldSet do
 
   it "should call through to the fields on #add_delegated_methods!" do
     @field_foo = double("field_foo")
-    allow(@field_foo).to receive(:json_storage_name).with().and_return(:foo)
+    allow(@field_foo).to receive(:json_storage_name).with(no_args).and_return(:foo)
 
     @field_bar = double("field_bar")
-    allow(@field_bar).to receive(:json_storage_name).with().and_return(:bar)
+    allow(@field_bar).to receive(:json_storage_name).with(no_args).and_return(:bar)
 
     expect(FlexColumns::Definition::FieldDefinition).to receive(:new).once.with(@flex_column_class, :foo, [ ], { }).and_return(@field_foo)
     @instance.field(:foo)
@@ -119,10 +119,10 @@ describe FlexColumns::Definition::FieldSet do
 
   it "should call through to the fields on #include_fields_into!" do
     @field_foo = double("field_foo")
-    allow(@field_foo).to receive(:json_storage_name).with().and_return(:foo)
+    allow(@field_foo).to receive(:json_storage_name).with(no_args).and_return(:foo)
 
     @field_bar = double("field_bar")
-    allow(@field_bar).to receive(:json_storage_name).with().and_return(:bar)
+    allow(@field_bar).to receive(:json_storage_name).with(no_args).and_return(:bar)
 
     expect(FlexColumns::Definition::FieldDefinition).to receive(:new).once.with(@flex_column_class, :foo, [ ], { }).and_return(@field_foo)
     @instance.field(:foo)

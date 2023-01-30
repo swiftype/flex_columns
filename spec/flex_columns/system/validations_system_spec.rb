@@ -33,7 +33,7 @@ describe "FlexColumns validations" do
     e = capture_exception(::ActiveRecord::RecordInvalid) { user.save! }
 
     e.record.should be(user)
-    e.record.errors.keys.should == [ :'user_attributes.wants_email' ]
+    e.record.errors.attribute_names.should == [ :'user_attributes.wants_email' ]
     messages = e.record.errors[:'user_attributes.wants_email']
     messages.length.should == 1
 
@@ -56,7 +56,7 @@ describe "FlexColumns validations" do
     e = capture_exception(::ActiveRecord::RecordInvalid) { user.save! }
 
     e.record.should be(user)
-    e.record.errors.keys.should == [ :wants_email ]
+    e.record.errors.attribute_names.should == [ :wants_email ]
     messages = e.record.errors[:wants_email]
     messages.length.should == 1
 
@@ -82,7 +82,7 @@ describe "FlexColumns validations" do
     e = capture_exception(::ActiveRecord::RecordInvalid) { user.save! }
 
     e.record.should be(user)
-    e.record.errors.keys.should == [ :wants_email ]
+    e.record.errors.attribute_names.should == [ :wants_email ]
     messages = e.record.errors[:wants_email]
     messages.length.should == 1
 
@@ -96,7 +96,7 @@ describe "FlexColumns validations" do
     e = capture_exception(::ActiveRecord::RecordInvalid) { user.save! }
 
     e.record.should be(user)
-    e.record.errors.keys.should == [ :'user_attributes.wants_email' ]
+    e.record.errors.attribute_names.should == [ :'user_attributes.wants_email' ]
     messages = e.record.errors[:'user_attributes.wants_email']
     messages.length.should == 1
 

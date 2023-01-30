@@ -7,7 +7,7 @@ describe FlexColumns::Contents::ColumnData do
   before :each do
     @field_set = double("field_set")
     allow(@field_set).to receive(:kind_of?).with(FlexColumns::Definition::FieldSet).and_return(true)
-    allow(@field_set).to receive(:all_field_names).with().and_return([ :foo, :bar, :baz ])
+    allow(@field_set).to receive(:all_field_names).with(no_args).and_return([ :foo, :bar, :baz ])
 
     @field_foo = double("field_foo")
     allow(@field_foo).to receive(:field_name).and_return(:foo)
@@ -38,7 +38,7 @@ describe FlexColumns::Contents::ColumnData do
     end
 
     @data_source = double("data_source")
-    allow(@data_source).to receive(:describe_flex_column_data_source).with().and_return("describedescribe")
+    allow(@data_source).to receive(:describe_flex_column_data_source).with(no_args).and_return("describedescribe")
     allow(@data_source).to receive(:notification_hash_for_flex_column_data_source).and_return(:notif1 => :a, :notif2 => :b)
 
     @json_string = '  {"bar":123,"foo":"bar","baz":"quux"}   '
@@ -302,7 +302,7 @@ describe FlexColumns::Contents::ColumnData do
         bad_encoding = double("bad_encoding")
         allow(bad_encoding).to receive(:kind_of?).with(String).and_return(true)
         allow(bad_encoding).to receive(:kind_of?).with(Hash).and_return(false)
-        expect(bad_encoding).to receive(:valid_encoding?).with().and_return(false)
+        expect(bad_encoding).to receive(:valid_encoding?).with(no_args).and_return(false)
 
         exception = StandardError.new("bonk")
         expect(FlexColumns::Errors::IncorrectlyEncodedStringInDatabaseError).to receive(:new).once.with(@data_source, bad_encoding).and_return(exception)
@@ -497,7 +497,7 @@ describe FlexColumns::Contents::ColumnData do
       it "should not allow unknown data to conflict with known data" do
         field_set = double("field_set")
         allow(field_set).to receive(:kind_of?).with(FlexColumns::Definition::FieldSet).and_return(true)
-        allow(field_set).to receive(:all_field_names).with().and_return([ :foo ])
+        allow(field_set).to receive(:all_field_names).with(no_args).and_return([ :foo ])
 
         field_foo = double("field_foo")
         allow(field_foo).to receive(:field_name).and_return(:foo)
@@ -519,7 +519,7 @@ describe FlexColumns::Contents::ColumnData do
 
         json_string = { :foo => 'aaa', :bar => 'bbb' }.to_json
         instance = klass.new(field_set, :storage_string => json_string, :data_source => @data_source,
-          :unknown_fields => :preserve, :storage => :text, :storage_string => json_string, :binary_header => true,
+          :unknown_fields => :preserve, :storage => :text, :binary_header => true,
           :null => true)
 
         instance[:foo].should == 'bbb'

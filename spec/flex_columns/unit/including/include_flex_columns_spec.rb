@@ -8,7 +8,7 @@ describe FlexColumns::Including::IncludeFlexColumns do
   describe "#_flex_column_included_object_for" do
     it "should raise an error if there is no appropriate association" do
       allow(@klass).to receive(:_flex_column_is_included_from).with(:foo).and_return(nil)
-      allow(@klass).to receive(:name).with().and_return("klassname")
+      allow(@klass).to receive(:name).with(no_args).and_return("klassname")
       instance = @klass.new
 
       lambda { instance._flex_column_included_object_for(:foo) }.should raise_error(FlexColumns::Errors::NoSuchColumnError, /klassname.*foo/i)
@@ -19,7 +19,7 @@ describe FlexColumns::Including::IncludeFlexColumns do
       instance = @klass.new
 
       association_object = double("association_object")
-      allow(instance).to receive(:assocname).with().and_return(association_object)
+      allow(instance).to receive(:assocname).with(no_args).and_return(association_object)
       allow(association_object).to receive(:colname).and_return(:baz)
 
       instance._flex_column_included_object_for(:colname).should == :baz
@@ -30,8 +30,8 @@ describe FlexColumns::Including::IncludeFlexColumns do
       instance = @klass.new
 
       association_object = double("association_object")
-      allow(instance).to receive(:assocname).with().and_return(nil)
-      allow(instance).to receive(:build_assocname).with().and_return(association_object)
+      allow(instance).to receive(:assocname).with(no_args).and_return(nil)
+      allow(instance).to receive(:build_assocname).with(no_args).and_return(association_object)
       allow(association_object).to receive(:colname).and_return(:baz)
 
       instance._flex_column_included_object_for(:colname).should == :baz
@@ -48,16 +48,16 @@ describe FlexColumns::Including::IncludeFlexColumns do
   describe "#include_flex_columns_from" do
     before :each do
       @assoc1 = double("assoc1")
-      allow(@assoc1).to receive(:name).with().and_return(:assoc1)
-      allow(@assoc1).to receive(:macro).with().and_return(:has_one)
+      allow(@assoc1).to receive(:name).with(no_args).and_return(:assoc1)
+      allow(@assoc1).to receive(:macro).with(no_args).and_return(:has_one)
       @assoc2 = double("assoc2")
-      allow(@assoc2).to receive(:name).with().and_return(:assoc2)
-      allow(@assoc2).to receive(:macro).with().and_return(:belongs_to)
+      allow(@assoc2).to receive(:name).with(no_args).and_return(:assoc2)
+      allow(@assoc2).to receive(:macro).with(no_args).and_return(:belongs_to)
 
       allow(@klass).to receive(:reflect_on_association).with(:assoc1).and_return(@assoc1)
       allow(@klass).to receive(:reflect_on_association).with(:assoc2).and_return(@assoc2)
 
-      allow(@klass).to receive(:reflect_on_all_associations).with().and_return([ @assoc1, @assoc2 ])
+      allow(@klass).to receive(:reflect_on_all_associations).with(no_args).and_return([ @assoc1, @assoc2 ])
     end
 
     it "should validate its options properly" do
@@ -73,14 +73,14 @@ describe FlexColumns::Including::IncludeFlexColumns do
     end
 
     it "should raise if the association is of the wrong type" do
-      allow(@assoc1).to receive(:macro).with().and_return(:has_many)
+      allow(@assoc1).to receive(:macro).with(no_args).and_return(:has_many)
       lambda { @klass.include_flex_columns_from(:assoc1) }.should raise_error(ArgumentError, /assoc1.*has_many/mi)
     end
 
     it "should raise if the target class does not respond to #has_any_flex_columns?" do
       association_class = double("association_class")
-      allow(association_class).to receive(:name).with().and_return("acname")
-      allow(@assoc2).to receive(:klass).with().and_return(association_class)
+      allow(association_class).to receive(:name).with(no_args).and_return("acname")
+      allow(@assoc2).to receive(:klass).with(no_args).and_return(association_class)
       allow(association_class).to receive(:respond_to?).with(:has_any_flex_columns?).and_return(false)
 
       lambda { @klass.include_flex_columns_from(:assoc2) }.should raise_error(ArgumentError, /assoc2.*acname/mi)
@@ -88,9 +88,9 @@ describe FlexColumns::Including::IncludeFlexColumns do
 
     it "should raise if the target class returns false from #has_any_flex_columns?" do
       association_class = double("association_class")
-      allow(association_class).to receive(:name).with().and_return("acname")
-      allow(@assoc2).to receive(:klass).with().and_return(association_class)
-      allow(association_class).to receive(:has_any_flex_columns?).with().and_return(false)
+      allow(association_class).to receive(:name).with(no_args).and_return("acname")
+      allow(@assoc2).to receive(:klass).with(no_args).and_return(association_class)
+      allow(association_class).to receive(:has_any_flex_columns?).with(no_args).and_return(false)
 
       lambda { @klass.include_flex_columns_from(:assoc2) }.should raise_error(ArgumentError, /assoc2.*acname/mi)
     end
@@ -100,9 +100,9 @@ describe FlexColumns::Including::IncludeFlexColumns do
       expect(FlexColumns::Util::DynamicMethodsModule).to receive(:new).once.with(@klass, :FlexColumnsIncludedColumnsMethods).and_return(dmm)
 
       ac1 = double("ac1")
-      allow(@assoc1).to receive(:klass).with().and_return(ac1)
-      allow(ac1).to receive(:has_any_flex_columns?).with().and_return(true)
-      allow(ac1).to receive(:_all_flex_column_names).with().and_return([ :ac1fc1, :ac1fc2 ])
+      allow(@assoc1).to receive(:klass).with(no_args).and_return(ac1)
+      allow(ac1).to receive(:has_any_flex_columns?).with(no_args).and_return(true)
+      allow(ac1).to receive(:_all_flex_column_names).with(no_args).and_return([ :ac1fc1, :ac1fc2 ])
 
       ac1fc1_fcc = double("ac1fc1_fcc")
       expect(ac1fc1_fcc).to receive(:include_fields_into).once.ordered.with(dmm, :assoc1, @klass, :prefix => 'abz', :delegate => false, :visibility => :private)
@@ -112,9 +112,9 @@ describe FlexColumns::Including::IncludeFlexColumns do
       allow(ac1).to receive(:_flex_column_class_for).with(:ac1fc2).and_return(ac1fc2_fcc)
 
       ac2 = double("ac2")
-      allow(@assoc2).to receive(:klass).with().and_return(ac2)
-      allow(ac2).to receive(:has_any_flex_columns?).with().and_return(true)
-      allow(ac2).to receive(:_all_flex_column_names).with().and_return([ :ac2fc1, :ac2fc2 ])
+      allow(@assoc2).to receive(:klass).with(no_args).and_return(ac2)
+      allow(ac2).to receive(:has_any_flex_columns?).with(no_args).and_return(true)
+      allow(ac2).to receive(:_all_flex_column_names).with(no_args).and_return([ :ac2fc1, :ac2fc2 ])
 
       ac2fc1_fcc = double("ac2fc1_fcc")
       expect(ac2fc1_fcc).to receive(:include_fields_into).once.ordered.with(dmm, :assoc2, @klass, :prefix => 'abz', :delegate => false, :visibility => :private)
