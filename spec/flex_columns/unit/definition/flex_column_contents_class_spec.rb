@@ -10,48 +10,48 @@ describe FlexColumns::Definition::FlexColumnContentsClass do
     @klass.send(:extend, FlexColumns::Definition::FlexColumnContentsClass)
 
     @model_class = double("model_class")
-    allow(@model_class).to receive(:table_exists?).with().and_return(true)
+    allow(@model_class).to receive(:table_exists?).with(no_args).and_return(true)
     allow(@model_class).to receive(:kind_of?).with(Class).and_return(true)
-    allow(@model_class).to receive(:has_any_flex_columns?).with().and_return(true)
-    allow(@model_class).to receive(:name).with().and_return(:mcname)
+    allow(@model_class).to receive(:has_any_flex_columns?).with(no_args).and_return(true)
+    allow(@model_class).to receive(:name).with(no_args).and_return(:mcname)
 
     @column_foo = double("column_foo")
-    allow(@column_foo).to receive(:name).with().and_return(:foo)
-    allow(@column_foo).to receive(:type).with().and_return(:text)
-    allow(@column_foo).to receive(:text?).with().and_return(true)
-    allow(@column_foo).to receive(:null).with().and_return(true)
-    allow(@column_foo).to receive(:sql_type).with().and_return('clob')
+    allow(@column_foo).to receive(:name).with(no_args).and_return(:foo)
+    allow(@column_foo).to receive(:type).with(no_args).and_return(:text)
+    allow(@column_foo).to receive(:text?).with(no_args).and_return(true)
+    allow(@column_foo).to receive(:null).with(no_args).and_return(true)
+    allow(@column_foo).to receive(:sql_type).with(no_args).and_return('clob')
 
     @column_bar = double("column_bar")
-    allow(@column_bar).to receive(:name).with().and_return(:bar)
-    allow(@column_bar).to receive(:type).with().and_return(:binary)
-    allow(@column_bar).to receive(:text?).with().and_return(false)
-    allow(@column_bar).to receive(:null).with().and_return(true)
-    allow(@column_bar).to receive(:sql_type).with().and_return('blob')
+    allow(@column_bar).to receive(:name).with(no_args).and_return(:bar)
+    allow(@column_bar).to receive(:type).with(no_args).and_return(:binary)
+    allow(@column_bar).to receive(:text?).with(no_args).and_return(false)
+    allow(@column_bar).to receive(:null).with(no_args).and_return(true)
+    allow(@column_bar).to receive(:sql_type).with(no_args).and_return('blob')
 
     @column_baz = double("column_baz")
-    allow(@column_baz).to receive(:name).with().and_return(:baz)
-    allow(@column_baz).to receive(:type).with().and_return(:integer)
-    allow(@column_baz).to receive(:text?).with().and_return(false)
-    allow(@column_baz).to receive(:null).with().and_return(true)
-    allow(@column_baz).to receive(:sql_type).with().and_return('integer')
+    allow(@column_baz).to receive(:name).with(no_args).and_return(:baz)
+    allow(@column_baz).to receive(:type).with(no_args).and_return(:integer)
+    allow(@column_baz).to receive(:text?).with(no_args).and_return(false)
+    allow(@column_baz).to receive(:null).with(no_args).and_return(true)
+    allow(@column_baz).to receive(:sql_type).with(no_args).and_return('integer')
 
     @column_quux = double("column_quux")
-    allow(@column_quux).to receive(:name).with().and_return(:quux)
-    allow(@column_quux).to receive(:type).with().and_return(:string)
-    allow(@column_quux).to receive(:text?).with().and_return(true)
-    allow(@column_quux).to receive(:null).with().and_return(true)
-    allow(@column_quux).to receive(:sql_type).with().and_return('varchar')
+    allow(@column_quux).to receive(:name).with(no_args).and_return(:quux)
+    allow(@column_quux).to receive(:type).with(no_args).and_return(:string)
+    allow(@column_quux).to receive(:text?).with(no_args).and_return(true)
+    allow(@column_quux).to receive(:null).with(no_args).and_return(true)
+    allow(@column_quux).to receive(:sql_type).with(no_args).and_return('varchar')
 
     @column_ajson = double("column_ajson")
-    allow(@column_ajson).to receive(:name).with().and_return(:ajson)
-    allow(@column_ajson).to receive(:type).with().and_return(:json)
-    allow(@column_ajson).to receive(:text?).with().and_return(false)
-    allow(@column_ajson).to receive(:null).with().and_return(true)
-    allow(@column_ajson).to receive(:sql_type).with().and_return('json')
+    allow(@column_ajson).to receive(:name).with(no_args).and_return(:ajson)
+    allow(@column_ajson).to receive(:type).with(no_args).and_return(:json)
+    allow(@column_ajson).to receive(:text?).with(no_args).and_return(false)
+    allow(@column_ajson).to receive(:null).with(no_args).and_return(true)
+    allow(@column_ajson).to receive(:sql_type).with(no_args).and_return('json')
 
     columns = [ @column_foo, @column_bar, @column_baz, @column_quux, @column_ajson ]
-    allow(@model_class).to receive(:columns).with().and_return(columns)
+    allow(@model_class).to receive(:columns).with(no_args).and_return(columns)
 
     allow(@model_class).to receive(:const_defined?).and_return(false)
     allow(@model_class).to receive(:const_set)
@@ -98,7 +98,7 @@ describe FlexColumns::Definition::FlexColumnContentsClass do
     end
 
     it "should require a model class that's an AR class" do
-      allow(@model_class).to receive(:has_any_flex_columns?).with().and_return(false)
+      allow(@model_class).to receive(:has_any_flex_columns?).with(no_args).and_return(false)
       lambda { @klass.setup!(@model_class, :foo) { } }.should raise_error(ArgumentError)
     end
 
@@ -114,13 +114,13 @@ describe FlexColumns::Definition::FlexColumnContentsClass do
     end
 
     it "should work if the table doesn't exist" do
-      allow(@model_class).to receive(:table_exists?).with().and_return(false)
+      allow(@model_class).to receive(:table_exists?).with(no_args).and_return(false)
       allow(@model_class).to receive(:columns).and_raise(StandardError) # to make sure we don't touch this
       @klass.setup!(@model_class, :foo) { }
     end
 
     it "should work if the column doesn't exist" do
-      allow(@model_class).to receive(:table_exists?).with().and_return(true)
+      allow(@model_class).to receive(:table_exists?).with(no_args).and_return(true)
       allow(@model_class).to receive(:columns).and_return([ @column_bar, @column_baz, @column_quux, @column_ajson ])
 
       @klass.setup!(@model_class, :foo) { }
@@ -211,7 +211,7 @@ describe FlexColumns::Definition::FlexColumnContentsClass do
 
   describe "reset_column_information" do
     it "should still generate a fake column if the table still doesn't exist" do
-      allow(@model_class).to receive(:table_exists?).with().and_return(false)
+      allow(@model_class).to receive(:table_exists?).with(no_args).and_return(false)
       @klass.setup!(@model_class, :bar) { }
       c = @klass.column
       c.name.should == :bar
@@ -226,16 +226,16 @@ describe FlexColumns::Definition::FlexColumnContentsClass do
     end
 
     it "should pull a real column if the table does exist" do
-      allow(@column_bar).to receive(:null).with().and_return(false)
+      allow(@column_bar).to receive(:null).with(no_args).and_return(false)
 
-      allow(@model_class).to receive(:table_exists?).with().and_return(false)
+      allow(@model_class).to receive(:table_exists?).with(no_args).and_return(false)
       @klass.setup!(@model_class, :bar) { }
       c = @klass.column
       c.name.should == :bar
       c.type.should == :string
       c.null.should == true
 
-      allow(@model_class).to receive(:table_exists?).with().and_return(true)
+      allow(@model_class).to receive(:table_exists?).with(no_args).and_return(true)
       @klass.reset_column_information
       c = @klass.column
       c.name.should == :bar
@@ -250,7 +250,7 @@ describe FlexColumns::Definition::FlexColumnContentsClass do
 
       data_source = double("data_source")
 
-      allow(instance_variable_get("@column_#{column_name}")).to receive(:limit).with().and_return(length_limit)
+      allow(instance_variable_get("@column_#{column_name}")).to receive(:limit).with(no_args).and_return(length_limit)
 
       resulting_options = { :storage_string => storage_string, :data_source => data_source }.merge(resulting_options)
 
@@ -316,7 +316,7 @@ describe FlexColumns::Definition::FlexColumnContentsClass do
     end
 
     it "should pass through the nullability setting correctly" do
-      allow(@column_foo).to receive(:null).with().and_return(false)
+      allow(@column_foo).to receive(:null).with(no_args).and_return(false)
       expect_options_transform({ }, 123, {
         :unknown_fields => :preserve,
         :length_limit => 123,
@@ -420,7 +420,7 @@ describe FlexColumns::Definition::FlexColumnContentsClass do
   describe "#all_field_names" do
     it "should delegate to the field set" do
       @klass.setup!(@model_class, :foo) { }
-      expect(@field_set).to receive(:all_field_names).once.with().and_return([ :a, :x, :z, :q ])
+      expect(@field_set).to receive(:all_field_names).once.with(no_args).and_return([ :a, :x, :z, :q ])
       @klass.all_field_names.should == [ :a, :x, :z, :q ]
     end
   end
@@ -431,10 +431,10 @@ describe FlexColumns::Definition::FlexColumnContentsClass do
 
       dmm = double("dmm")
       expect(FlexColumns::Util::DynamicMethodsModule).to receive(:new).once.with(@klass, :FlexFieldsDynamicMethods).and_return(dmm)
-      expect(dmm).to receive(:remove_all_methods!).with().once
+      expect(dmm).to receive(:remove_all_methods!).with(no_args).once
 
       mc_dmm = double("mc_dmm")
-      allow(@model_class).to receive(:_flex_column_dynamic_methods_module).with().and_return(mc_dmm)
+      allow(@model_class).to receive(:_flex_column_dynamic_methods_module).with(no_args).and_return(mc_dmm)
       expect(@field_set).to receive(:add_delegated_methods!).once.with(dmm, mc_dmm, @model_class)
 
       @klass.sync_methods!
@@ -445,15 +445,15 @@ describe FlexColumns::Definition::FlexColumnContentsClass do
 
       dmm = double("dmm")
       expect(FlexColumns::Util::DynamicMethodsModule).to receive(:new).once.with(@klass, :FlexFieldsDynamicMethods).and_return(dmm)
-      expect(dmm).to receive(:remove_all_methods!).with().once
+      expect(dmm).to receive(:remove_all_methods!).with(no_args).once
 
       mc_dmm = double("mc_dmm")
-      allow(@model_class).to receive(:_flex_column_dynamic_methods_module).with().and_return(mc_dmm)
+      allow(@model_class).to receive(:_flex_column_dynamic_methods_module).with(no_args).and_return(mc_dmm)
       expect(@field_set).to receive(:add_delegated_methods!).once.with(dmm, mc_dmm, @model_class)
 
       @klass.sync_methods!
 
-      expect(dmm).to receive(:remove_all_methods!).with().once
+      expect(dmm).to receive(:remove_all_methods!).with(no_args).once
       expect(@field_set).to receive(:add_delegated_methods!).once.with(dmm, mc_dmm, @model_class)
 
       @klass.sync_methods!
@@ -468,7 +468,7 @@ describe FlexColumns::Definition::FlexColumnContentsClass do
 
       dmm = double("dmm")
       expect(FlexColumns::Util::DynamicMethodsModule).to receive(:new).once.with(@klass, :FlexFieldsDynamicMethods).and_return(dmm)
-      expect(dmm).to receive(:remove_all_methods!).with().once
+      expect(dmm).to receive(:remove_all_methods!).with(no_args).once
 
       mc_dmm = Class.new
       mc_dmm.class_eval do
@@ -477,7 +477,7 @@ describe FlexColumns::Definition::FlexColumnContentsClass do
         end
       end
 
-      allow(@model_class).to receive(:_flex_column_dynamic_methods_module).with().and_return(mc_dmm)
+      allow(@model_class).to receive(:_flex_column_dynamic_methods_module).with(no_args).and_return(mc_dmm)
       expect(@field_set).to receive(:add_delegated_methods!).once.with(dmm, mc_dmm, @model_class)
 
       allow(@model_class).to receive(:_flex_columns_safe_to_define_method?).with("cm1").and_return(true)
@@ -534,7 +534,7 @@ describe FlexColumns::Definition::FlexColumnContentsClass do
         model = double("model")
         fco = double("fco")
         allow(model).to receive(:_flex_column_object_for).with(:foo, false).and_return(fco)
-        allow(fco).to receive(:deserialized?).with().and_return(true)
+        allow(fco).to receive(:deserialized?).with(no_args).and_return(true)
         @klass.requires_serialization_on_save?(model).should be
       end
 
@@ -542,7 +542,7 @@ describe FlexColumns::Definition::FlexColumnContentsClass do
         model = double("model")
         fco = double("fco")
         allow(model).to receive(:_flex_column_object_for).with(:foo, false).and_return(fco)
-        allow(fco).to receive(:deserialized?).with().and_return(false)
+        allow(fco).to receive(:deserialized?).with(no_args).and_return(false)
         @klass.requires_serialization_on_save?(model).should_not be
       end
 
@@ -550,7 +550,7 @@ describe FlexColumns::Definition::FlexColumnContentsClass do
         model = double("model")
         fco = double("fco")
         allow(model).to receive(:_flex_column_object_for).with(:foo, false).and_return(nil)
-        allow(@column_foo).to receive(:null).with().and_return(true)
+        allow(@column_foo).to receive(:null).with(no_args).and_return(true)
         @klass.requires_serialization_on_save?(model).should_not be
       end
 
@@ -558,7 +558,7 @@ describe FlexColumns::Definition::FlexColumnContentsClass do
         model = double("model")
         fco = double("fco")
         allow(model).to receive(:_flex_column_object_for).with(:foo, false).and_return(nil)
-        allow(@column_foo).to receive(:null).with().and_return(false)
+        allow(@column_foo).to receive(:null).with(no_args).and_return(false)
         allow(model).to receive(:[]).with(:foo).and_return("some data")
         @klass.requires_serialization_on_save?(model).should_not be
       end
@@ -567,7 +567,7 @@ describe FlexColumns::Definition::FlexColumnContentsClass do
         model = double("model")
         fco = double("fco")
         allow(model).to receive(:_flex_column_object_for).with(:foo, false).and_return(nil)
-        allow(@column_foo).to receive(:null).with().and_return(false)
+        allow(@column_foo).to receive(:null).with(no_args).and_return(false)
         allow(model).to receive(:[]).with(:foo).and_return(nil)
         @klass.requires_serialization_on_save?(model).should be
       end

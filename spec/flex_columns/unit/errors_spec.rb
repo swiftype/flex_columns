@@ -15,7 +15,7 @@ describe FlexColumns::Errors do
 
   before :each do
     @data_source = double("data_source")
-    allow(@data_source).to receive(:describe_flex_column_data_source).with().and_return("dfcds")
+    allow(@data_source).to receive(:describe_flex_column_data_source).with(no_args).and_return("dfcds")
   end
 
   describe FlexColumns::Errors::FieldError do
@@ -48,7 +48,7 @@ describe FlexColumns::Errors do
 
     it "should take model_class, column_name, new_field_name, existing_field_name, and json_storage_name" do
       model_class = double("model_class")
-      allow(model_class).to receive(:name).with().and_return("mcname")
+      allow(model_class).to receive(:name).with(no_args).and_return("mcname")
 
       instance = FlexColumns::Errors::ConflictingJsonStorageNameError.new(model_class, :foo, :bar, :baz, :quux)
       instance.model_class.should be(model_class)
@@ -133,9 +133,9 @@ describe FlexColumns::Errors do
     it "should take data_source, raw_string, and source_exception" do
       source_exception = double("source_exception")
       source_exception_class = double("source_exception_class")
-      allow(source_exception_class).to receive(:name).with().and_return("secname")
-      allow(source_exception).to receive(:class).with().and_return(source_exception_class)
-      allow(source_exception).to receive(:to_s).with().and_return("seto_s")
+      allow(source_exception_class).to receive(:name).with(no_args).and_return("secname")
+      allow(source_exception).to receive(:class).with(no_args).and_return(source_exception_class)
+      allow(source_exception).to receive(:to_s).with(no_args).and_return("seto_s")
 
       instance = FlexColumns::Errors::InvalidCompressedDataInDatabaseError.new(@data_source, "a" * 1_000, source_exception)
       instance.data_source.should be(@data_source)
@@ -178,9 +178,9 @@ describe FlexColumns::Errors do
     it "should take data_source, raw_string, and source_exception" do
       source_exception = double("source_exception")
       source_exception_class = double("source_exception_class")
-      allow(source_exception_class).to receive(:name).with().and_return("secname")
-      allow(source_exception).to receive(:class).with().and_return(source_exception_class)
-      allow(source_exception).to receive(:message).with().and_return("semessage")
+      allow(source_exception_class).to receive(:name).with(no_args).and_return("secname")
+      allow(source_exception).to receive(:class).with(no_args).and_return(source_exception_class)
+      allow(source_exception).to receive(:message).with(no_args).and_return("semessage")
 
       instance = FlexColumns::Errors::UnparseableJsonInDatabaseError.new(@data_source, "a" * 1_000, source_exception)
       instance.data_source.should be(@data_source)
@@ -197,22 +197,22 @@ describe FlexColumns::Errors do
     it "should strip out characters that aren't of a valid encoding" do
       source_exception = double("source_exception")
       source_exception_class = double("source_exception_class")
-      allow(source_exception_class).to receive(:name).with().and_return("secname")
-      allow(source_exception).to receive(:class).with().and_return(source_exception_class)
+      allow(source_exception_class).to receive(:name).with(no_args).and_return("secname")
+      allow(source_exception).to receive(:class).with(no_args).and_return(source_exception_class)
 
       source_message = double("source_message")
       expect(source_message).to receive(:force_encoding).once.with("UTF-8")
       chars = [ double("char-a"), double("char-b"), double("char-c") ]
-      allow(chars[0]).to receive(:valid_encoding?).with().and_return(true)
-      allow(chars[0]).to receive(:to_s).with().and_return("X")
-      allow(chars[0]).to receive(:inspect).with().and_return("X")
-      allow(chars[1]).to receive(:valid_encoding?).with().and_return(false)
-      allow(chars[2]).to receive(:valid_encoding?).with().and_return(true)
-      allow(chars[2]).to receive(:to_s).with().and_return("Z")
-      allow(chars[2]).to receive(:inspect).with().and_return("Z")
-      allow(source_message).to receive(:chars).with().and_return(chars)
+      allow(chars[0]).to receive(:valid_encoding?).with(no_args).and_return(true)
+      allow(chars[0]).to receive(:to_s).with(no_args).and_return("X")
+      allow(chars[0]).to receive(:inspect).with(no_args).and_return("X")
+      allow(chars[1]).to receive(:valid_encoding?).with(no_args).and_return(false)
+      allow(chars[2]).to receive(:valid_encoding?).with(no_args).and_return(true)
+      allow(chars[2]).to receive(:to_s).with(no_args).and_return("Z")
+      allow(chars[2]).to receive(:inspect).with(no_args).and_return("Z")
+      allow(source_message).to receive(:chars).with(no_args).and_return(chars)
 
-      allow(source_exception).to receive(:message).with().and_return(source_message)
+      allow(source_exception).to receive(:message).with(no_args).and_return(source_message)
 
       instance = FlexColumns::Errors::UnparseableJsonInDatabaseError.new(@data_source, "a" * 1_000, source_exception)
       instance.data_source.should be(@data_source)
@@ -236,22 +236,22 @@ describe FlexColumns::Errors do
       chars = [ ]
       200.times { |i| chars << double("char-#{i}") }
       chars.each_with_index do |char, i|
-        allow(char).to receive(:valid_encoding?).with().and_return(true)
-        allow(char).to receive(:to_s).with().and_return((65 + (i % 26)).chr)
-        allow(char).to receive(:inspect).with().and_return((65 + (i % 26)).chr)
+        allow(char).to receive(:valid_encoding?).with(no_args).and_return(true)
+        allow(char).to receive(:to_s).with(no_args).and_return((65 + (i % 26)).chr)
+        allow(char).to receive(:inspect).with(no_args).and_return((65 + (i % 26)).chr)
       end
 
       [ 53, 68, 95 ].each do |bad_char_pos|
-        allow(chars[bad_char_pos]).to receive(:valid_encoding?).with().and_return(false)
+        allow(chars[bad_char_pos]).to receive(:valid_encoding?).with(no_args).and_return(false)
         allow(chars[bad_char_pos]).to receive(:unpack).with("H*").and_return("UPC#{bad_char_pos}")
       end
 
-      allow(chars[53]).to receive(:valid_encoding?).with().and_return(false)
-      allow(chars[68]).to receive(:valid_encoding?).with().and_return(false)
-      allow(chars[95]).to receive(:valid_encoding?).with().and_return(false)
+      allow(chars[53]).to receive(:valid_encoding?).with(no_args).and_return(false)
+      allow(chars[68]).to receive(:valid_encoding?).with(no_args).and_return(false)
+      allow(chars[95]).to receive(:valid_encoding?).with(no_args).and_return(false)
 
       raw_string = double("raw_string")
-      allow(raw_string).to receive(:chars).with().and_return(chars)
+      allow(raw_string).to receive(:chars).with(no_args).and_return(chars)
 
       instance = FlexColumns::Errors::IncorrectlyEncodedStringInDatabaseError.new(@data_source, raw_string)
 

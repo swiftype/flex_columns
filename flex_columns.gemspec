@@ -28,7 +28,7 @@ Gem::Specification.new do |s|
   ar_version = ar_version.strip if ar_version
 
   version_spec = case ar_version
-  when nil then [ ">= 3.0", "<= 5.99.99" ]
+  when nil then [ ">= 3.0", "< 7" ]
   when 'master' then nil
   else [ "=#{ar_version}" ]
   end
@@ -37,7 +37,7 @@ Gem::Specification.new do |s|
     s.add_dependency("activerecord", *version_spec)
   end
 
-  s.add_dependency "activesupport", ">= 3.0", "<= 5.99.99"
+  s.add_dependency "activesupport", ">= 3.0", "< 7"
 
   # i18n released an 0.7.0 that's incompatible with Ruby 1.8.
   if RUBY_VERSION =~ /^1\.8\./

@@ -25,7 +25,7 @@ describe "FlexColumns basic operations" do
     object.valid?.should_not be
 
     full_name = "user_attributes.#{field}".to_sym
-    object.errors.keys.should == [ full_name ]
+    object.errors.attribute_names.should == [ full_name ]
 
     if pattern
       object.errors[full_name].length.should == 1

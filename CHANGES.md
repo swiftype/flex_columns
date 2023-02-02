@@ -2,6 +2,10 @@
 
 ## 1.0.10, 2022-04-11
 
+* Bump ActiveRecord version to be compatible with Rails 6
+
+## 1.0.10, 2022-04-11
+
 * Bump gem version to resolve conflicts with original gem version
 
 ## 1.0.9, 2022-03-31

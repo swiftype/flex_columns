@@ -57,10 +57,10 @@ describe "FlexColumns JSON aliasing" do
     user.wants_email = -123
 
     user.valid?.should_not be
-    user.errors.keys.should == [ :'user_attributes.wants_email' ]
+    user.errors.attribute_names.should == [ :'user_attributes.wants_email' ]
 
     user.user_attributes.valid?.should_not be
-    user.user_attributes.errors.keys.should == [ :wants_email ]
+    user.user_attributes.errors.attribute_names.should == [ :wants_email ]
   end
 
   it "should prohibit conflicting JSON names" do

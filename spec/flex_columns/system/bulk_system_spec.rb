@@ -130,7 +130,7 @@ describe "FlexColumns bulk operations" do
 
       object.bbb = "cannot-validate"
       object.valid?.should_not be
-      object.errors.keys.should == [ :bbb ]
+      object.errors.attribute_names.should == [ :bbb ]
       object.errors[:bbb].length.should == 1
       object.errors[:bbb][0].should match(/is not a number/i)
     end
@@ -145,7 +145,7 @@ describe "FlexColumns bulk operations" do
 
       object.bbb = "cannot-validate"
       object.valid?.should_not be
-      object.errors.keys.should == [ :bbb ]
+      object.errors.attribute_names.should == [ :bbb ]
       object.errors[:bbb].length.should == 1
       object.errors[:bbb][0].should match(/is not a number/i)
     end

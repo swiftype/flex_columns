@@ -17,7 +17,7 @@ describe FlexColumns::Definition::FieldDefinition do
 
   before :each do
     @flex_column_class = double("flex_column_class")
-    allow(@flex_column_class).to receive(:is_flex_column_class?).with().and_return(true)
+    allow(@flex_column_class).to receive(:is_flex_column_class?).with(no_args).and_return(true)
   end
 
   describe "#initialize" do
@@ -26,7 +26,7 @@ describe FlexColumns::Definition::FieldDefinition do
       lambda { klass.new(non_fcc, :foo, [ ], { }) }.should raise_error(ArgumentError)
 
       non_fcc = double("flex_column_class")
-      allow(non_fcc).to receive(:is_flex_column_class?).with().and_return(false)
+      allow(non_fcc).to receive(:is_flex_column_class?).with(no_args).and_return(false)
       lambda { klass.new(non_fcc, :foo, [ ], { }) }.should raise_error(ArgumentError)
 
       lambda { klass.new(@flex_column_class, :foo, [ ], { :foo => :bar }) }.should raise_error(ArgumentError)
@@ -96,7 +96,7 @@ describe FlexColumns::Definition::FieldDefinition do
         record = double("record")
         errors = double("errors")
 
-        allow(record).to receive(:errors).with().and_return(errors)
+        allow(record).to receive(:errors).with(no_args).and_return(errors)
 
         if expected_error
           expect(errors).to receive(:add).once.with(:foo, expected_error)
@@ -169,7 +169,7 @@ describe FlexColumns::Definition::FieldDefinition do
     end
 
     it "should define methods on the flex-column class" do
-      allow(@flex_column_class).to receive(:fields_are_private_by_default?).with().and_return(false)
+      allow(@flex_column_class).to receive(:fields_are_private_by_default?).with(no_args).and_return(false)
       klass.new(@flex_column_class, :foo, [ ], { :json => :bar }).add_methods_to_flex_column_class!(@dmm)
 
       instance = @dmm.new(:foo => 123)
@@ -179,7 +179,7 @@ describe FlexColumns::Definition::FieldDefinition do
     end
 
     it "should define methods on the flex-column class privately if the flex-column says to" do
-      allow(@flex_column_class).to receive(:fields_are_private_by_default?).with().and_return(true)
+      allow(@flex_column_class).to receive(:fields_are_private_by_default?).with(no_args).and_return(true)
       klass.new(@flex_column_class, :foo, [ ], { :json => :bar }).add_methods_to_flex_column_class!(@dmm)
 
       instance = @dmm.new(:foo => 123)
@@ -193,7 +193,7 @@ describe FlexColumns::Definition::FieldDefinition do
     end
 
     it "should define methods on the flex-column class privately if the field says to" do
-      allow(@flex_column_class).to receive(:fields_are_private_by_default?).with().and_return(false)
+      allow(@flex_column_class).to receive(:fields_are_private_by_default?).with(no_args).and_return(false)
       klass.new(@flex_column_class, :foo, [ ], { :json => :bar, :visibility => :private }).add_methods_to_flex_column_class!(@dmm)
 
       instance = @dmm.new(:foo => 123)
@@ -207,7 +207,7 @@ describe FlexColumns::Definition::FieldDefinition do
     end
 
     it "should define methods on the flex-column class publicly if the field says to" do
-      allow(@flex_column_class).to receive(:fields_are_private_by_default?).with().and_return(true)
+      allow(@flex_column_class).to receive(:fields_are_private_by_default?).with(no_args).and_return(true)
       klass.new(@flex_column_class, :foo, [ ], { :json => :bar, :visibility => :public }).add_methods_to_flex_column_class!(@dmm)
 
       instance = @dmm.new(:foo => 123)
@@ -238,12 +238,12 @@ describe FlexColumns::Definition::FieldDefinition do
 
       flex_instance = { }
       field = klass.new(@flex_column_class, :foo, [ ], create_options)
-      allow(@flex_column_class).to receive(:fields_are_private_by_default?).with().and_return(fields_are_private_by_default)
+      allow(@flex_column_class).to receive(:fields_are_private_by_default?).with(no_args).and_return(fields_are_private_by_default)
 
       allow(@model_class).to receive(:_flex_columns_safe_to_define_method?).with(method_name.to_sym).and_return(safe_to_define)
       allow(@model_class).to receive(:_flex_columns_safe_to_define_method?).with("#{method_name}=".to_sym).and_return(safe_to_define)
-      allow(@flex_column_class).to receive(:delegation_type).with().and_return(delegation_type)
-      allow(@flex_column_class).to receive(:delegation_prefix).with().and_return(delegation_prefix)
+      allow(@flex_column_class).to receive(:delegation_type).with(no_args).and_return(delegation_type)
+      allow(@flex_column_class).to receive(:delegation_prefix).with(no_args).and_return(delegation_prefix)
 
       field.add_methods_to_model_class!(@dmm, @model_class)
 
@@ -378,14 +378,14 @@ describe FlexColumns::Definition::FieldDefinition do
       method_should_exist = options[:method_should_exist]
       should_be_private = options[:should_be_private]
 
-      allow(@flex_column_class).to receive(:delegation_type).with().and_return(delegation_type)
-      allow(@flex_column_class).to receive(:delegation_prefix).with().and_return(delegation_prefix)
-      allow(@flex_column_class).to receive(:fields_are_private_by_default?).with().and_return(fields_are_private_by_default)
+      allow(@flex_column_class).to receive(:delegation_type).with(no_args).and_return(delegation_type)
+      allow(@flex_column_class).to receive(:delegation_prefix).with(no_args).and_return(delegation_prefix)
+      allow(@flex_column_class).to receive(:fields_are_private_by_default?).with(no_args).and_return(fields_are_private_by_default)
 
       @model_class = double("model_class")
-      allow(@model_class).to receive(:name).with().and_return("mcname")
-      allow(@flex_column_class).to receive(:model_class).with().and_return(@model_class)
-      allow(@flex_column_class).to receive(:column_name).with().and_return(:colname)
+      allow(@model_class).to receive(:name).with(no_args).and_return("mcname")
+      allow(@flex_column_class).to receive(:model_class).with(no_args).and_return(@model_class)
+      allow(@flex_column_class).to receive(:column_name).with(no_args).and_return(:colname)
 
       target_class = double("target_class")
       allow(target_class).to receive(:_flex_columns_safe_to_define_method?).with(method_name.to_sym).and_return(safe_to_define)

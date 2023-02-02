@@ -20,8 +20,8 @@ describe FlexColumns::Contents::FlexColumnContentsBase do
   context "with a set-up class" do
     before :each do
       @model_class = Class.new
-      allow(@klass).to receive(:model_class).with().and_return(@model_class)
-      allow(@klass).to receive(:column_name).with().and_return(:fcn)
+      allow(@klass).to receive(:model_class).with(no_args).and_return(@model_class)
+      allow(@klass).to receive(:column_name).with(no_args).and_return(:fcn)
 
       @json_string = '{"foo":"bar","bar":"baz"}'
 
@@ -81,8 +81,8 @@ describe FlexColumns::Contents::FlexColumnContentsBase do
         expect_column_data_creation(@json_string)
         @instance = @klass.new(@model_instance)
 
-        allow(@model_class).to receive(:name).with().and_return("mcname")
-        allow(@model_instance).to receive(:id).with().and_return("mcid")
+        allow(@model_class).to receive(:name).with(no_args).and_return("mcname")
+        allow(@model_instance).to receive(:id).with(no_args).and_return("mcid")
         s = @instance.describe_flex_column_data_source
 
         s.should match(/mcname/)
@@ -94,7 +94,7 @@ describe FlexColumns::Contents::FlexColumnContentsBase do
         expect_column_data_creation(@json_string)
         @instance = @klass.new(@json_string)
 
-        allow(@model_class).to receive(:name).with().and_return("mcname")
+        allow(@model_class).to receive(:name).with(no_args).and_return("mcname")
         s = @instance.describe_flex_column_data_source
         s.should match(/mcname/)
         s.should match(/fcn/)
@@ -136,7 +136,7 @@ describe FlexColumns::Contents::FlexColumnContentsBase do
         expect_column_data_creation(@json_string)
         @instance = @klass.new(@model_instance)
 
-        expect(@instance).to receive(:valid?).once.with().and_return(true)
+        expect(@instance).to receive(:valid?).once.with(no_args).and_return(true)
         @instance.before_validation!
       end
 
@@ -144,8 +144,11 @@ describe FlexColumns::Contents::FlexColumnContentsBase do
         expect_column_data_creation(@json_string)
         @instance = @klass.new(@model_instance)
 
-        expect(@instance).to receive(:valid?).once.with().and_return(false)
-        allow(@instance).to receive(:errors).with().and_return({ :e1 => :m1, :e2 => :m2 })
+        expect(@instance).to receive(:valid?).once.with(no_args).and_return(false)
+        allow(@instance).to receive(:errors).with(no_args).and_return([
+          double('error', attribute: :e1, message: :m1),
+          double('error', attribute: :e2, message: :m2)
+        ])
 
         errors = Object.new
         class << errors
@@ -159,7 +162,7 @@ describe FlexColumns::Contents::FlexColumnContentsBase do
           end
         end
 
-        allow(@model_instance).to receive(:errors).with().and_return(errors)
+        allow(@model_instance).to receive(:errors).with(no_args).and_return(errors)
 
         @instance.before_validation!
         all_errors = errors.all_errors
@@ -200,15 +203,15 @@ describe FlexColumns::Contents::FlexColumnContentsBase do
         end
 
         it "should tell you if it's been deserialized" do
-          expect(@column_data).to receive(:deserialized?).once.with().and_return(true)
+          expect(@column_data).to receive(:deserialized?).once.with(no_args).and_return(true)
           @instance.deserialized?.should be
-          expect(@column_data).to receive(:deserialized?).once.with().and_return(false)
+          expect(@column_data).to receive(:deserialized?).once.with(no_args).and_return(false)
           @instance.deserialized?.should_not be
         end
 
         it "should save if the class tells it to" do
           expect(@klass).to receive(:requires_serialization_on_save?).once.with(@model_instance).and_return(true)
-          expect(@column_data).to receive(:to_stored_data).once.with().and_return("somestoreddata")
+          expect(@column_data).to receive(:to_stored_data).once.with(no_args).and_return("somestoreddata")
           expect(@model_instance).to receive(:[]=).once.with(:fcn, "somestoreddata")
           @instance.before_save!
         end
@@ -260,22 +263,22 @@ describe FlexColumns::Contents::FlexColumnContentsBase do
       end
 
       it "should delegate to the column data on #touch!" do
-        expect(@column_data).to receive(:touch!).once.with()
+        expect(@column_data).to receive(:touch!).once.with(no_args)
         @instance.touch!
       end
 
       it "should delegate to the column data on #to_json" do
-        expect(@column_data).to receive(:to_json).once.with().and_return("somejsondata")
+        expect(@column_data).to receive(:to_json).once.with(no_args).and_return("somejsondata")
         @instance.to_json.should == "somejsondata"
       end
 
       it "should delegate to the column data on #to_stored_data" do
-        expect(@column_data).to receive(:to_stored_data).once.with().and_return("somestoreddata")
+        expect(@column_data).to receive(:to_stored_data).once.with(no_args).and_return("somestoreddata")
         @instance.to_stored_data.should == "somestoreddata"
       end
 
       it "should delegate to the column data on #keys" do
-        expect(@column_data).to receive(:keys).once.with().and_return([ :a, :z, :q ])
+        expect(@column_data).to receive(:keys).once.with(no_args).and_return([ :a, :z, :q ])
         @instance.keys.should == [ :a, :z, :q ]
       end
     end
