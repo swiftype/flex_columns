@@ -1,5 +1,9 @@
 # `flex_columns` Changelog
 
+## 1.0.12
+
+* Relax ActiveRecord/ActiveSupport constraints to allow Rails 7.x (`< 8`)
+
 ## 1.0.10, 2022-04-11
 
 * Bump ActiveRecord version to be compatible with Rails 6
