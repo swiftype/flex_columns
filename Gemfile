@@ -15,3 +15,6 @@ end
 if version_spec
   gem("activerecord", version_spec)
 end
+
+# concurrent-ruby 1.3.5 dropped its implicit require of 'logger', which breaks ActiveSupport < 7.1.
+gem("concurrent-ruby", "< 1.3.5") if ar_version && ar_version =~ /\A[0-6]\./

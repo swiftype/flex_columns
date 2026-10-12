@@ -1,5 +1,12 @@
 # `flex_columns` Changelog
 
+## 1.0.13
+
+* Fix validation errors from a flex column being copied onto the model with a garbage attribute name on
+  ActiveModel 6.1+ (`errors.each` yields an error object there, not a name and a message)
+* Require `json < 3` (ActiveSupport 7.x still passes `quirks_mode`, which json 3 removed)
+* Make the specs and development dependencies installable and passing on Ruby 3.2 (RSpec 3, ActiveRecord 6.1 and 7.2)
+
 ## 1.0.12
 
 * Relax ActiveRecord/ActiveSupport constraints to allow Rails 7.x (`< 8`)

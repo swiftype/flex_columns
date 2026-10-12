@@ -11,11 +11,20 @@ while relying on the most reliable, manageable, proven data engines out there.
 
 Supported platforms:
 
-* Ruby 1.8.7, 1.9.3, 2.0.0, 2.1.2, and JRuby 1.7.12.
-* ActiveRecord 3.0.20, 3.1.12, 3.2.19, 4.0.8, and 4.1.4. (Should be compatible with future versions, as well...just sits on top of the public API of ActiveRecord.)
-* Tested against MySQL, PostgreSQL, and SQLite 3. (Should be compatible with all RDBMSes supported by ActiveRecord.)
+* Ruby 3.2 (MRI). Older Rubies may work but are no longer tested.
+* ActiveRecord 6.1 and 7.2 are tested; the gemspec allows 3.0 up to (but not including) 8. (Should be compatible with future versions, as well...just sits on top of the public API of ActiveRecord.)
+* Tested against MySQL and SQLite 3. (Should be compatible with all RDBMSes supported by ActiveRecord.)
 
-Current build status: ![Current Build Status](https://api.travis-ci.org/ageweke/flex_columns.png?branch=master)
+### Running the specs
+
+```
+bundle install
+FLEX_COLUMNS_TRAVIS_CI_DATABASE_TYPE=sqlite bundle exec rspec
+```
+
+Set `FLEX_COLUMNS_AR_TEST_VERSION` (for example `6.1.7.10`) to run against a specific ActiveRecord version. To use MySQL
+or PostgreSQL, create `spec_database_config.rb` (git-ignored) as described in the error message that the specs print
+when no database is configured.
 
 ### Installing flex_columns
 
