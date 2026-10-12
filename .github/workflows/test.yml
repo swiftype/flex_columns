@@ -1,0 +1,33 @@
+name: Tests
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: ${{ matrix.database }} / ActiveRecord ${{ matrix.activerecord }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        database: [sqlite, mysql, postgres]
+        activerecord: ["6.1.7.10", "7.2.3.2"]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: ruby/setup-ruby@e81a8fa391b11a595c1b7ed84177cc0fe02faf83 # v1.328.0
+        with:
+          ruby-version: .ruby-version
+
+      - name: Install the MySQL client library
+        if: matrix.database == 'mysql'
+        run: sudo apt-get update && sudo apt-get install -y libmysqlclient-dev
+
+      # script/test-docker starts the database container itself, so the workflow and local runs stay identical.
+      - name: Run the specs
+        run: script/test-docker ${{ matrix.database }} ${{ matrix.activerecord }}
