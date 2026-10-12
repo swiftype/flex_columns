@@ -22,7 +22,20 @@ bundle install
 FLEX_COLUMNS_TRAVIS_CI_DATABASE_TYPE=sqlite bundle exec rspec
 ```
 
-Set `FLEX_COLUMNS_AR_TEST_VERSION` (for example `6.1.7.10`) to run against a specific ActiveRecord version. To use MySQL
+To run the specs against throwaway MySQL and PostgreSQL containers (and SQLite) without installing any database, use
+`script/test-docker` (requires Docker):
+
+```
+script/test-docker                          # all databases, ActiveRecord 7.2.3.2 and 6.1.7.10
+script/test-docker postgres 7.2.3.2         # one database, one ActiveRecord version
+script/test-docker mysql -- spec/flex_columns/system/validations_system_spec.rb
+```
+
+It uses its own database configuration, so your `spec_database_config.rb` is neither used nor modified. The `mysql2`
+gem needs the MySQL client library on the host (for example `brew install mysql-client` or
+`apt-get install libmysqlclient-dev`).
+
+To run by hand, set `FLEX_COLUMNS_AR_TEST_VERSION` (for example `6.1.7.10`) to run against a specific ActiveRecord version. To use MySQL
 or PostgreSQL, create `spec_database_config.rb` (git-ignored) as described in the error message that the specs print
 when no database is configured. For example, for PostgreSQL:
 
