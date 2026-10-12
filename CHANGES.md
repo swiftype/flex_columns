@@ -1,11 +1,23 @@
 # `flex_columns` Changelog
 
-## 1.0.13
+## 2.0.0
+
+**Breaking**
+
+* Requires Ruby 2.7 or newer (`required_ruby_version`). Ruby 1.8.7 through 2.6 and JRuby 1.7, which the Travis
+  configuration used to cover, are no longer supported or tested. The continuous-integration matrix is now Ruby 2.7 to
+  3.2 with ActiveRecord 6.1 to 7.2 (SQLite, MySQL and PostgreSQL), run on GitHub Actions.
+* Requires `json < 3` (ActiveSupport 7.x still passes `quirks_mode`, which json 3 removed).
+
+**Fixes**
 
 * Fix validation errors from a flex column being copied onto the model with a garbage attribute name on
   ActiveModel 6.1+ (`errors.each` yields an error object there, not a name and a message)
-* Require `json < 3` (ActiveSupport 7.x still passes `quirks_mode`, which json 3 removed)
-* Make the specs and development dependencies installable and passing on Ruby 3.2 (RSpec 3, ActiveRecord 6.1 and 7.2)
+
+**Development**
+
+* The specs and development dependencies install and pass on Ruby 2.7 to 3.2 (RSpec 3); `script/test-docker` runs them
+  against containerized databases.
 
 ## 1.0.12
 
