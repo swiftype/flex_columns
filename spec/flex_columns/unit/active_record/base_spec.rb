@@ -11,7 +11,7 @@ describe FlexColumns::ActiveRecord::Base do
   end
 
   it "should include HasFlexColumns on flex_column" do
-    block = lambda { "hi!" }
+    block = proc { "hi!" }
 
     expect(@klass).to receive(:include).once.with(FlexColumns::HasFlexColumns) do
       expect(@klass).to receive(:flex_column).once.with(:foo, &block)
@@ -21,7 +21,7 @@ describe FlexColumns::ActiveRecord::Base do
   end
 
   it "should include IncludeFlexColumns on include_flex_columns_from" do
-    block = lambda { "hi!" }
+    block = proc { "hi!" }
 
     expect(@klass).to receive(:include).once.with(FlexColumns::Including::IncludeFlexColumns) do
       expect(@klass).to receive(:include_flex_columns_from).once.with(:foo, &block)

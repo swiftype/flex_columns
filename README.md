@@ -11,11 +11,44 @@ while relying on the most reliable, manageable, proven data engines out there.
 
 Supported platforms:
 
-* Ruby 1.8.7, 1.9.3, 2.0.0, 2.1.2, and JRuby 1.7.12.
-* ActiveRecord 3.0.20, 3.1.12, 3.2.19, 4.0.8, and 4.1.4. (Should be compatible with future versions, as well...just sits on top of the public API of ActiveRecord.)
-* Tested against MySQL, PostgreSQL, and SQLite 3. (Should be compatible with all RDBMSes supported by ActiveRecord.)
+* Ruby 2.7, 3.0, 3.1 and 3.2 (MRI). Version 2.0.0 requires Ruby 2.7 or newer; earlier versions of this gem supported Ruby 1.8.7 to 2.2 and JRuby 1.7.
+* ActiveRecord 6.1, 7.0, 7.1 and 7.2 are tested (6.1 on every Ruby, 7.x on Ruby 3.1+); the gemspec allows 3.0 up to (but not including) 8. (Should be compatible with future versions, as well...just sits on top of the public API of ActiveRecord.)
+* Tested against MySQL, PostgreSQL and SQLite 3. (Should be compatible with all RDBMSes supported by ActiveRecord.)
 
-Current build status: ![Current Build Status](https://api.travis-ci.org/ageweke/flex_columns.png?branch=master)
+### Running the specs
+
+```
+bundle install
+FLEX_COLUMNS_TRAVIS_CI_DATABASE_TYPE=sqlite bundle exec rspec
+```
+
+To run the specs against throwaway MySQL and PostgreSQL containers (and SQLite) without installing any database, use
+`script/test-docker` (requires Docker):
+
+```
+script/test-docker                          # all databases, ActiveRecord 7.2.3.2 and 6.1.7.10
+script/test-docker postgres 7.2.3.2         # one database, one ActiveRecord version
+script/test-docker mysql -- spec/flex_columns/system/validations_system_spec.rb
+```
+
+It uses its own database configuration, so your `spec_database_config.rb` is neither used nor modified. The `mysql2`
+gem needs the MySQL client library on the host (for example `brew install mysql-client` or
+`apt-get install libmysqlclient-dev`).
+
+To run by hand, set `FLEX_COLUMNS_AR_TEST_VERSION` (for example `6.1.7.10`) to run against a specific ActiveRecord version. To use MySQL
+or PostgreSQL, create `spec_database_config.rb` (git-ignored) as described in the error message that the specs print
+when no database is configured. For example, for PostgreSQL:
+
+```ruby
+FLEX_COLUMNS_SPEC_DATABASE_CONFIG = {
+  :require => 'pg', :database_gem_name => 'pg',
+  :config => { :adapter => 'postgresql', :database => 'myapp_test', :username => 'postgres',
+               :host => '127.0.0.1', :min_messages => 'WARNING' }
+}
+```
+
+The file takes priority over `FLEX_COLUMNS_TRAVIS_CI_DATABASE_TYPE`. Delete `Gemfile.lock` when you switch databases or
+ActiveRecord versions.
 
 ### Installing flex_columns
 

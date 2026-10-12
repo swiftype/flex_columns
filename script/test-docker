@@ -1,0 +1,173 @@
+#!/usr/bin/env bash
+#
+# Runs the specs against throwaway database containers, so that you only need Docker and Ruby.
+#
+#   script/test-docker [sqlite|mysql|postgres|all ...] [ACTIVERECORD_VERSION ...] [-- RSPEC_ARGS]
+#
+# Examples:
+#   script/test-docker                         # all databases, ActiveRecord 7.2.3.2 and 6.1.7.10
+#   script/test-docker postgres 7.2.3.2        # one database, one ActiveRecord version
+#   script/test-docker mysql -- spec/flex_columns/system/validations_system_spec.rb
+#
+# Notes:
+#   * MySQL and PostgreSQL run in containers on random local ports and are always removed on exit.
+#     SQLite runs in memory and needs no container.
+#   * The 'mysql2' and 'pg' gems are installed on the host; 'mysql2' needs the MySQL client library
+#     (for example `brew install mysql-client` or `apt-get install libmysqlclient-dev`).
+#   * Your own spec_database_config.rb is not used or modified. Gemfile.lock is regenerated for every
+#     combination and your existing one is restored on exit.
+#   * Override the images with FLEX_COLUMNS_MYSQL_IMAGE and FLEX_COLUMNS_POSTGRES_IMAGE.
+
+set -u -o pipefail
+
+MYSQL_IMAGE="${FLEX_COLUMNS_MYSQL_IMAGE:-mysql:8}"
+POSTGRES_IMAGE="${FLEX_COLUMNS_POSTGRES_IMAGE:-postgres:16}"
+DEFAULT_AR_VERSIONS="7.2.3.2 6.1.7.10"
+DB_PASSWORD="flexcolumns"
+DB_NAME="myapp_test"
+READY_TIMEOUT=90
+
+cd "$(dirname "$0")/.." || exit 2
+
+databases=()
+ar_versions=()
+rspec_args=()
+while [ $# -gt 0 ]; do
+  case "$1" in
+    sqlite|mysql|postgres) databases+=("$1") ;;
+    all) databases+=(sqlite mysql postgres) ;;
+    --) shift; rspec_args=("$@"); break ;;
+    [0-9]*) ar_versions+=("$1") ;;
+    -h|--help) sed -n '2,/^$/p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+    *) echo "Unknown argument: $1 (see --help)" >&2; exit 2 ;;
+  esac
+  shift
+done
+[ ${#databases[@]} -eq 0 ] && databases=(sqlite mysql postgres)
+[ ${#ar_versions[@]} -eq 0 ] && read -r -a ar_versions <<< "$DEFAULT_AR_VERSIONS"
+
+needs_docker=false
+for db in "${databases[@]}"; do [ "$db" != sqlite ] && needs_docker=true; done
+if $needs_docker && ! docker info >/dev/null 2>&1; then
+  echo "Docker is required for mysql/postgres but 'docker info' failed. Is Docker running?" >&2
+  exit 2
+fi
+
+work_dir="$(mktemp -d)"
+containers=()
+lock_backup=""
+if [ -f Gemfile.lock ]; then lock_backup="$work_dir/Gemfile.lock.orig"; cp Gemfile.lock "$lock_backup"; fi
+
+cleanup() {
+  local c
+  for c in ${containers[@]+"${containers[@]}"}; do docker rm -f "$c" >/dev/null 2>&1; done
+  if [ -n "$lock_backup" ]; then cp "$lock_backup" Gemfile.lock; else rm -f Gemfile.lock; fi
+}
+trap cleanup EXIT
+trap 'exit 130' INT TERM
+
+# Starts a container for $1 (mysql|postgres), waits until it accepts TCP connections and writes the
+# spec database configuration to $2. Prints the container name on stdout; returns non-zero on failure.
+start_database() {
+  local db="$1" config_file="$2" name="flex-columns-test-$1-$$" image port i ready_cmd
+
+  if [ "$db" = mysql ]; then
+    image="$MYSQL_IMAGE"
+    docker run -d --rm --name "$name" -e MYSQL_ROOT_PASSWORD="$DB_PASSWORD" -e MYSQL_DATABASE="$DB_NAME" \
+      -p 127.0.0.1::3306 "$image" >/dev/null || return 1
+    containers+=("$name")
+    # Checking over TCP inside the container skips the temporary server that the image starts for initialization.
+    ready_cmd="mysql -uroot -p$DB_PASSWORD -h127.0.0.1 -e 'select 1'"
+    port="$(docker port "$name" 3306/tcp | head -n1 | sed 's/.*://')"
+  else
+    image="$POSTGRES_IMAGE"
+    docker run -d --rm --name "$name" -e POSTGRES_PASSWORD="$DB_PASSWORD" -e POSTGRES_DB="$DB_NAME" \
+      -p 127.0.0.1::5432 "$image" >/dev/null || return 1
+    containers+=("$name")
+    ready_cmd="pg_isready -h 127.0.0.1 -U postgres"
+    port="$(docker port "$name" 5432/tcp | head -n1 | sed 's/.*://')"
+  fi
+
+  for i in $(seq 1 "$READY_TIMEOUT"); do
+    docker exec "$name" sh -c "$ready_cmd" >/dev/null 2>&1 && break
+    sleep 1
+    if [ "$i" -eq "$READY_TIMEOUT" ]; then echo "$db did not become ready in ${READY_TIMEOUT}s" >&2; return 1; fi
+  done
+
+  if [ "$db" = mysql ]; then
+    cat > "$config_file" <<RUBY
+FLEX_COLUMNS_SPEC_DATABASE_CONFIG = {
+  :require => 'mysql2', :database_gem_name => 'mysql2',
+  :config => { :adapter => 'mysql2', :database => '$DB_NAME', :username => 'root', :password => '$DB_PASSWORD',
+               :host => '127.0.0.1', :port => $port, :encoding => 'utf8' }
+}
+RUBY
+  else
+    cat > "$config_file" <<RUBY
+FLEX_COLUMNS_SPEC_DATABASE_CONFIG = {
+  :require => 'pg', :database_gem_name => 'pg',
+  :config => { :adapter => 'postgresql', :database => '$DB_NAME', :username => 'postgres', :password => '$DB_PASSWORD',
+               :host => '127.0.0.1', :port => $port, :min_messages => 'WARNING' }
+}
+RUBY
+  fi
+  echo "$name"
+}
+
+write_sqlite_config() {
+  cat > "$1" <<'RUBY'
+FLEX_COLUMNS_SPEC_DATABASE_CONFIG = {
+  :require => 'sqlite3', :database_gem_name => 'sqlite3',
+  :config => { :adapter => 'sqlite3', :database => ':memory:' }
+}
+RUBY
+}
+
+results=()
+failed=false
+
+for db in "${databases[@]}"; do
+  config_file="$work_dir/spec_database_config_$db.rb"
+  container=""
+
+  if [ "$db" = sqlite ]; then
+    write_sqlite_config "$config_file"
+  else
+    echo "==> Starting $db container..."
+    if ! container="$(start_database "$db" "$config_file")"; then
+      for ar in "${ar_versions[@]}"; do results+=("$db|$ar|container did not start"); done
+      failed=true
+      continue
+    fi
+  fi
+
+  for ar in "${ar_versions[@]}"; do
+    log="$work_dir/$db-$ar.log"
+    echo "==> $db / ActiveRecord $ar (log: $log)"
+    rm -f Gemfile.lock
+    export FLEX_COLUMNS_AR_TEST_VERSION="$ar"
+    export FLEX_COLUMNS_SPEC_DATABASE_CONFIG_FILE="$config_file"
+    unset FLEX_COLUMNS_TRAVIS_CI_DATABASE_TYPE
+
+    if ! bundle install > "$log" 2>&1; then
+      results+=("$db|$ar|bundle install failed")
+      failed=true
+      continue
+    fi
+    bundle exec rspec ${rspec_args[@]+"${rspec_args[@]}"} >> "$log" 2>&1
+    status=$?
+    summary="$(grep -E '^[0-9]+ examples?,' "$log" | tail -n1)"
+    [ -z "$summary" ] && summary="no summary (see log)"
+    if [ $status -eq 0 ]; then results+=("$db|$ar|PASS: $summary"); else results+=("$db|$ar|FAIL: $summary"); failed=true; fi
+  done
+
+  if [ -n "$container" ]; then docker rm -f "$container" >/dev/null 2>&1; fi
+done
+
+echo
+printf '%-10s %-12s %s\n' DATABASE ACTIVERECORD RESULT
+for r in "${results[@]}"; do IFS='|' read -r db ar res <<< "$r"; printf '%-10s %-12s %s\n' "$db" "$ar" "$res"; done
+echo
+echo "Logs: $work_dir"
+$failed && exit 1
+exit 0

@@ -151,7 +151,8 @@ module FlexColumns
       end
 
       def config_file_path
-        @config_file_path ||= File.expand_path(File.join(File.dirname(__FILE__), '..', '..', '..', 'spec_database_config.rb'))
+        @config_file_path ||= ENV['FLEX_COLUMNS_SPEC_DATABASE_CONFIG_FILE'] ||
+          File.expand_path(File.join(File.dirname(__FILE__), '..', '..', '..', 'spec_database_config.rb'))
       end
 
       def invalid_config_file!

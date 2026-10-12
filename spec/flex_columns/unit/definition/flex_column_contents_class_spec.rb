@@ -511,7 +511,7 @@ describe FlexColumns::Definition::FlexColumnContentsClass do
     end
 
     it "should pass through :field to the field set" do
-      expect(@field_set).to receive(:field).once.with(:foo, :bar, :baz => :quux)
+      expect(@field_set).to receive(:field).once.with(:foo, :bar, { :baz => :quux })
       @klass.field(:foo, :bar, :baz => :quux)
     end
 
