@@ -11,8 +11,8 @@ while relying on the most reliable, manageable, proven data engines out there.
 
 Supported platforms:
 
-* Ruby 3.2 (MRI). Older Rubies may work but are no longer tested.
-* ActiveRecord 6.1 and 7.2 are tested; the gemspec allows 3.0 up to (but not including) 8. (Should be compatible with future versions, as well...just sits on top of the public API of ActiveRecord.)
+* Ruby 2.7, 3.0, 3.1 and 3.2 (MRI). Older Rubies may work but are no longer tested.
+* ActiveRecord 6.1, 7.0, 7.1 and 7.2 are tested (6.1 on every Ruby, 7.x on Ruby 3.1+); the gemspec allows 3.0 up to (but not including) 8. (Should be compatible with future versions, as well...just sits on top of the public API of ActiveRecord.)
 * Tested against MySQL, PostgreSQL and SQLite 3. (Should be compatible with all RDBMSes supported by ActiveRecord.)
 
 ### Running the specs

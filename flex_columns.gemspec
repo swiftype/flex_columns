@@ -41,7 +41,7 @@ Gem::Specification.new do |s|
   require File.expand_path(File.join(File.dirname(__FILE__), 'spec', 'flex_columns', 'helpers', 'database_helper'))
   database_gem_name = FlexColumns::Helpers::DatabaseHelper.maybe_database_gem_name
 
-  if database_gem_name == 'sqlite3' && ar_version && ar_version =~ /\A[0-6]\./
+  if database_gem_name == 'sqlite3' && ar_version && ar_version =~ /\A\d/ && Gem::Version.new(ar_version) < Gem::Version.new('7.1')
     # ActiveRecord before 7.1 does not accept sqlite3 2.x.
     s.add_development_dependency(database_gem_name, '~> 1.4')
   elsif database_gem_name
