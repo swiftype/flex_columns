@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   test:
-    name: ruby ${{ matrix.ruby }} / ${{ matrix.database }} / ActiveRecord ${{ matrix.activerecord }}
+    name: ruby ${{ matrix.combo.ruby }} / ${{ matrix.database }} / ActiveRecord ${{ matrix.combo.activerecord }}
     # Ubuntu 22.04 still provides the older Rubies.
     runs-on: ubuntu-22.04
     strategy:
@@ -19,7 +19,7 @@ jobs:
       matrix:
         database: [sqlite, mysql, postgres]
         # Explicit pairs: ActiveRecord 7.x needs Ruby 3.1+, and 6.1 is the oldest version the specs support.
-        include:
+        combo:
           - { ruby: "2.7", activerecord: "6.1.7.10" }
           - { ruby: "3.0", activerecord: "6.1.7.10" }
           - { ruby: "3.1", activerecord: "6.1.7.10" }
@@ -35,7 +35,7 @@ jobs:
 
       - uses: ruby/setup-ruby@e81a8fa391b11a595c1b7ed84177cc0fe02faf83 # v1.328.0
         with:
-          ruby-version: ${{ matrix.ruby }}
+          ruby-version: ${{ matrix.combo.ruby }}
 
       - name: Install the MySQL client library
         if: matrix.database == 'mysql'
@@ -43,4 +43,4 @@ jobs:
 
       # script/test-docker starts the database container itself, so the workflow and local runs stay identical.
       - name: Run the specs
-        run: script/test-docker ${{ matrix.database }} ${{ matrix.activerecord }}
+        run: script/test-docker ${{ matrix.database }} ${{ matrix.combo.activerecord }}
