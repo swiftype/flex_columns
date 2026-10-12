@@ -105,10 +105,10 @@ describe FlexColumns::Including::IncludeFlexColumns do
       allow(ac1).to receive(:_all_flex_column_names).with(no_args).and_return([ :ac1fc1, :ac1fc2 ])
 
       ac1fc1_fcc = double("ac1fc1_fcc")
-      expect(ac1fc1_fcc).to receive(:include_fields_into).once.ordered.with(dmm, :assoc1, @klass, :prefix => 'abz', :delegate => false, :visibility => :private)
+      expect(ac1fc1_fcc).to receive(:include_fields_into).once.ordered.with(dmm, :assoc1, @klass, { :prefix => 'abz', :delegate => false, :visibility => :private })
       allow(ac1).to receive(:_flex_column_class_for).with(:ac1fc1).and_return(ac1fc1_fcc)
       ac1fc2_fcc = double("ac1fc2_fcc")
-      expect(ac1fc2_fcc).to receive(:include_fields_into).once.ordered.with(dmm, :assoc1, @klass, :prefix => 'abz', :delegate => false, :visibility => :private)
+      expect(ac1fc2_fcc).to receive(:include_fields_into).once.ordered.with(dmm, :assoc1, @klass, { :prefix => 'abz', :delegate => false, :visibility => :private })
       allow(ac1).to receive(:_flex_column_class_for).with(:ac1fc2).and_return(ac1fc2_fcc)
 
       ac2 = double("ac2")
@@ -117,10 +117,10 @@ describe FlexColumns::Including::IncludeFlexColumns do
       allow(ac2).to receive(:_all_flex_column_names).with(no_args).and_return([ :ac2fc1, :ac2fc2 ])
 
       ac2fc1_fcc = double("ac2fc1_fcc")
-      expect(ac2fc1_fcc).to receive(:include_fields_into).once.ordered.with(dmm, :assoc2, @klass, :prefix => 'abz', :delegate => false, :visibility => :private)
+      expect(ac2fc1_fcc).to receive(:include_fields_into).once.ordered.with(dmm, :assoc2, @klass, { :prefix => 'abz', :delegate => false, :visibility => :private })
       allow(ac2).to receive(:_flex_column_class_for).with(:ac2fc1).and_return(ac2fc1_fcc)
       ac2fc2_fcc = double("ac2fc2_fcc")
-      expect(ac2fc2_fcc).to receive(:include_fields_into).once.ordered.with(dmm, :assoc2, @klass, :prefix => 'abz', :delegate => false, :visibility => :private)
+      expect(ac2fc2_fcc).to receive(:include_fields_into).once.ordered.with(dmm, :assoc2, @klass, { :prefix => 'abz', :delegate => false, :visibility => :private })
       allow(ac2).to receive(:_flex_column_class_for).with(:ac2fc2).and_return(ac2fc2_fcc)
 
       @klass.include_flex_columns_from(:assoc1, :assoc2, :prefix => 'abz', :delegate => false, :visibility => :private)

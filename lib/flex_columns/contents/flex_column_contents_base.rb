@@ -146,7 +146,15 @@ module FlexColumns
       def before_validation!
         return unless model_instance
         unless valid?
-          errors.each do |name, message|
+          errors.each do |*args|
+            # ActiveModel 6.1+ yields a single error object; older versions yield the attribute name and message.
+            error = args.first
+            if error.respond_to?(:attribute) && error.respond_to?(:message)
+              name, message = error.attribute, error.message
+            else
+              name, message = args
+            end
+
             model_instance.errors.add("#{column_name}.#{name}", message)
           end
         end
