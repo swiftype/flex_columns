@@ -13,7 +13,7 @@ Supported platforms:
 
 * Ruby 3.2 (MRI). Older Rubies may work but are no longer tested.
 * ActiveRecord 6.1 and 7.2 are tested; the gemspec allows 3.0 up to (but not including) 8. (Should be compatible with future versions, as well...just sits on top of the public API of ActiveRecord.)
-* Tested against MySQL and SQLite 3. (Should be compatible with all RDBMSes supported by ActiveRecord.)
+* Tested against MySQL, PostgreSQL and SQLite 3. (Should be compatible with all RDBMSes supported by ActiveRecord.)
 
 ### Running the specs
 
@@ -24,7 +24,18 @@ FLEX_COLUMNS_TRAVIS_CI_DATABASE_TYPE=sqlite bundle exec rspec
 
 Set `FLEX_COLUMNS_AR_TEST_VERSION` (for example `6.1.7.10`) to run against a specific ActiveRecord version. To use MySQL
 or PostgreSQL, create `spec_database_config.rb` (git-ignored) as described in the error message that the specs print
-when no database is configured.
+when no database is configured. For example, for PostgreSQL:
+
+```ruby
+FLEX_COLUMNS_SPEC_DATABASE_CONFIG = {
+  :require => 'pg', :database_gem_name => 'pg',
+  :config => { :adapter => 'postgresql', :database => 'myapp_test', :username => 'postgres',
+               :host => '127.0.0.1', :min_messages => 'WARNING' }
+}
+```
+
+The file takes priority over `FLEX_COLUMNS_TRAVIS_CI_DATABASE_TYPE`. Delete `Gemfile.lock` when you switch databases or
+ActiveRecord versions.
 
 ### Installing flex_columns
 
