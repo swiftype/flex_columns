@@ -2,7 +2,7 @@ name: Tests
 
 on:
   push:
-    branches: [master, modernize-test-suite]
+    branches: [master]
   pull_request:
   workflow_dispatch:
 

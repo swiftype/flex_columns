@@ -1,5 +1,11 @@
 # `flex_columns` Changelog
 
+## 2.0.1
+
+* No change to the library
+* The GitHub Actions workflow runs on pushes to `master` (plus pull requests and on demand); the temporary trigger for the
+  `modernize-test-suite` branch was removed
+
 ## 2.0.0
 
 **Breaking**
